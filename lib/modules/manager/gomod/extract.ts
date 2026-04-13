@@ -72,5 +72,31 @@ export function extractPackageFile(content: string): PackageFileContent | null {
     return null;
   }
 
-  return { deps };
+  const packageFile: PackageFileContent = {
+    deps,
+  };
+
+  const goDirective = packageFile.deps.find(
+    (dep) =>
+      dep.depName === 'go' &&
+      dep.depType === 'golang' &&
+      dep.datasource === 'golang-version',
+  );
+  if (goDirective?.currentValue) {
+    packageFile.extractedConstraints ??= {};
+    packageFile.extractedConstraints['go-mod'] = goDirective.currentValue;
+  }
+
+  const toolchainDirective = packageFile.deps.find(
+    (dep) =>
+      dep.depName === 'go' &&
+      dep.depType === 'toolchain' &&
+      dep.datasource === 'golang-version',
+  );
+  if (toolchainDirective?.currentValue) {
+    packageFile.extractedConstraints ??= {};
+    packageFile.extractedConstraints.go = toolchainDirective.currentValue;
+  }
+
+  return packageFile;
 }

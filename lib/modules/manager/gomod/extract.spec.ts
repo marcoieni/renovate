@@ -121,6 +121,9 @@ describe('modules/manager/gomod/extract', () => {
             datasource: 'go',
           },
         ],
+        extractedConstraints: {
+          'go-mod': '1.23',
+        },
       });
     });
 
@@ -170,6 +173,9 @@ describe('modules/manager/gomod/extract', () => {
             versioning: 'loose',
           },
         ],
+        extractedConstraints: {
+          'go-mod': '1.25.5',
+        },
       });
     });
 
@@ -232,6 +238,10 @@ describe('modules/manager/gomod/extract', () => {
             datasource: 'go',
           },
         ],
+        extractedConstraints: {
+          'go-mod': '1.23',
+          go: '1.23.3',
+        },
       });
     });
 
@@ -490,6 +500,34 @@ describe('modules/manager/gomod/extract', () => {
           skipReason: 'invalid-version',
         },
       ],
+      extractedConstraints: {
+        'go-mod': '1.19',
+      },
+    });
+  });
+
+  it('extracts the `go` directive as a `go-mod` extracted constraint', () => {
+    const goMod = codeBlock`
+        module github.com/renovate-tests/gomod
+        go 1.19
+      `;
+    const res = extractPackageFile(goMod);
+    expect(res).toEqual({
+      deps: [
+        {
+          managerData: {
+            lineNumber: 1,
+          },
+          depName: 'go',
+          depType: 'golang',
+          currentValue: '1.19',
+          datasource: 'golang-version',
+          versioning: 'go-mod-directive',
+        },
+      ],
+      extractedConstraints: {
+        'go-mod': '1.19',
+      },
     });
   });
 });
